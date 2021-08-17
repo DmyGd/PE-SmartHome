@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de control - Rasp Berry</title>
+    <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+        integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+        crossorigin="anonymous"></script>
+
+    <link rel="icon" href="./images/favicon.ico">
+    <style type="text/css">
+        :root {
+            --main-font: sans-serif;
+            --font-size: 16px;
+        }
+
+        /*Reseteo basico*/
+        html {
+            box-sizing: border-box;
+            font-family: var(--main-font);
+            font-size: var(--font-size);
+            scroll-behavior: smooth;
+            /* transicion entre secciones */
+        }
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+            /* Hereda todos los elementos del box-sizing*/
+        }
+
+        body {
+            margin: 0;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Clases de los swiches */
+        /* Recuperado de: https://www.instagram.com/p/CSXDWmtDus7/?utm_medium=copy_link */
+        .switches {
+            width: 75px;
+            height: 30px;
+            background: #212221;
+            background: linear-gradient(to right, #4a80e0, #8e2de2);
+            border-radius: 50px;
+            position: relative;
+        }
+
+        .switches input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .switches input::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 70%;
+            background: rgb(255, 255, 255);
+            border-radius: 50px;
+        }
+
+        .switches input::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            transform: translate(7px, -50%);
+            width: 25px;
+            height: 25px;
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            opacity: 0.4;
+            border-radius: 50px;
+            transition: all 0.4s;
+        }
+
+        .switches input:checked::after {
+            transform: translate(170%, -50%);
+            opacity: 1;
+        }
+
+        .loader {
+            margin: 0.5rem auto;
+            display: block;
+            width: 2rem;
+            height: 2rem;
+        }
+
+        /* https://codepen.io/aeewhite/pen/BjzbOL */
+        .RecButton {
+            width: 6px;
+            height: 9px;
+            font-size: 0;
+            background-color: red;
+            border: 0;
+            border-radius: 15px;
+            margin: 10px;
+            outline: none;
+        }
+
+        .notRec {
+            background-color: darkred;
+        }
+
+        .Rec {
+            animation-name: pulse;
+            animation-duration: 1.5s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0px 0px 5px 0px rgba(173, 0, 0, 0.3);
+            }
+
+            65% {
+                box-shadow: 0px 0px 5px 13px rgba(173, 0, 0, 0.3);
+            }
+
+            90% {
+                box-shadow: 0px 0px 5px 13px rgba(173, 0, 0, 0);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="./index.html">SMART HOME</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+
+                <li class="nav-item">
+                    <a id="cams" class="nav-link icon ion-md-aperture" href="#cams"> Camaras</a>
+                </li>
+                <li class="nav-item">
+                    <a id="light" class="nav-link icon ion-md-sunny" href="#lights"> Luces</a>
+                </li>
+                <li class="nav-item">
+                    <a id="bell" class="nav-link icon ion-md-notifications" href="#bell"> Timbre</a>
+                </li>
+                <li class="nav-item">
+                    <a id="door" class="nav-link icon ion-md-walk" href="#door"> Puertas</a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <section id="Seccion">
+        <!-- <div class="switches">
+            <input type="checkbox" name="sw1" id="sw1">
+        </div> -->
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3><b>Main control</b></h3>
+                    <div id="lastAccess"></div>
+                    <div id="reloj"></div>
+
+                    <p>Programar apagado:</p>
+                    <input type="date" id="dateOff" name="off" value="2021-08-15" min="2021-08-14" max="2025-12-31">
+                    <input type="time" id="timeOff" name="appt" min="00:00" max="00:00" required>
+                    <button id="setOffServices" type="button" class="btn btn-outline-primary btn-sm">Programar</button>
+
+
+                </div>
+
+                <div class="col">
+                    <br>
+                    <h5><b>Encendido/Apagado general</b></h5>
+                    <br>
+                    <p>Apagar todos los sistemas: </p>
+                    <button id="shutDown" type="button" class="btn btn-outline-danger">Apagar</button>
+                </div>
+
+                <div class="col">
+                    <br>
+                    <center>
+                        <img src="./images/facultad.png" alt="Escudo de la facultad" width="50%" height="50%">
+                    </center>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div id="programados"></div>
+                </div>
+                <div class="col">
+                </div>
+                <div class="col">
+                    <h4 class="text-center"><b>Autores:</b></h4>
+                    <p class="text-center"><b>Dominguez Durán Gerardo</b></p>
+                    <p class="text-center"><b>Mendez Cabrera Ana Belém</b></p>
+                    <p class="text-center"><b>Rodríguez Sánchez José Andrés</b></p>
+
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+
+    <!-- Sección de librerias -->
+    <script language="javascript">
+        /* ==Fetch== */
+        const json_data = {
+            camaras: [
+                [1, "Off"],
+                [2, "Off"],
+                [3, "Off"],
+                [4, "Off"],
+            ],
+            luces: [],
+            timbre: [],
+            puertas: [],
+        };
+        const json_cams = {
+            camaras: [
+                [1, "Off"],
+                [2, "Off"],
+                [3, "Off"],
+                [4, "Off"],
+            ],
+
+        }
+        const json_lights = {
+            luces: [
+                [1, "Off"],
+                [2, "Off"],
+                [3, "Off"],
+                [4, "Off"],
+                [5, "Off"],
+                [6, "Off"],
+            ],
+            slide: [
+                [1, 7],
+                [2, 7],
+                [3, 7],
+                [4, 7],
+                [5, 7],
+                [6, 7],
+            ]
+        }
+        const json_bell = {
+            timbre: [
+                [1, "Closed"]
+            ],
+        }
+        const json_door = {
+            puertas: [
+                [1, "Closed"],
+                [2, "Closed"],
+            ],
+        }
+        const reset_section = {
+            reset: "reset",
+        }
+
+        const ajax = (options) => {
+            let { url, method, success, error, data } = options;
+            const xhr = new XMLHttpRequest();
+
+            xhr.addEventListener("readystatechange", (e) => {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    let json = JSON.parse(xhr.responseText);
+                    success(json);
+                } else {
+                    let message = xhr.statusText || "Ocurrio un error";
+                    error(`Error: ${xhr.status}: ${message}`);
+                }
+            });
+            xhr.open(method || "GET", url); //si no se coloca el parametro, es get por default
+            xhr.withCredentials = "*";
+            xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+            xhr.send(JSON.stringify(data));
+        };
+
+        const sentData = async (j_data) => {
+            const d = document;
+            let $section = d.getElementById("Seccion");
+            ajax({
+                method: "POST",
+                url: "http://localhost:8080/",
+                success: (res) => loction.reload(),
+                //error: () => $section.insertAdjacentHTML("afterend", `<p><b> Algo salio mal </b></p>`),
+                error: () => console.log(""),
+                data: j_data,
+            });
+        };
+
+        const dataFetch = {
+            sentData,
+            reset_section,
+            json_cams,
+            json_lights,
+            json_bell,
+            json_door,
+        };
+
+        /* ==== */
+
+        /* ===Main=== */
+        const setClock = function () {
+            let $reloj = document.getElementById("reloj");
+            let fecha = new Date().toLocaleString(),
+                ls = localStorage;
+            $reloj.innerHTML = `<p><b>${fecha}</b></p>`;
+            ls.setItem("lastAccess", fecha);
+            console.log("Soy el reloj");
+            console.log($reloj);
+        };
+
+        const getLastAccess = function () {
+            let $acceso = document.getElementById("lastAccess"),
+                $programados = document.getElementById("programados"),
+                ls = localStorage,
+                lastAccess = "";
+
+            lastAccess = ls.getItem("lastAccess") || new Date().toLocaleString();
+            $acceso.innerHTML = `<p><i>Ultimo acceso: ${lastAccess}</i></p>`;
+
+            if (ls.getItem("FechaApagado") !== null) {
+                //console.log(ls.getItem("dateValid"));
+                if (new Date(ls.getItem("dateValid")) < new Date()) {
+                    console.log("entre a la validación");
+                    ls.clear();
+                    $programados.innerHTML = "";
+                } else {
+                    $programados.innerHTML = `
+      <br>
+      <h4><b>Apagado programado: </b></h4>
+      <br>
+      <p>Fecha: ${ls.getItem("FechaApagado")} hora: ${ls.getItem("HoraApagado")}
+      <button id="delDate" type="button" class="btn btn-danger btn-sm">Eliminar</button>
+      </p>
+      `;
+                }
+            }
+        };
+
+        const setOffServices = function () {
+            let date = document.getElementById("dateOff"),
+                timeOff = document.getElementById("timeOff"),
+                $programados = document.getElementById("programados"),
+                ls = localStorage;
+            let fechaCreada = new Date(`${date.value} ${timeOff.value}`);
+            console.log(fechaCreada);
+            ls.setItem("dateValid", fechaCreada);
+            ls.setItem("FechaApagado", date.value);
+            ls.setItem("HoraApagado", timeOff.value);
+            $programados.innerHTML = `
+    <br>
+    <h4><b>Apagado programado: </b></h4>
+    <br>
+    <p>Fecha: ${date.value} hora: ${timeOff.value}
+    <button id="delDate" type="button" class="btn btn-danger btn-sm">Eliminar</button>
+    </p>
+    `;
+            location.reload();
+        };
+        const delOffServices = function () {
+            let $programados = document.getElementById("programados"),
+                ls = localStorage;
+            ls.removeItem("FechaApagado");
+            ls.removeItem("HoraApagado");
+            $programados.innerHTML = " ";
+        };
+
+        const shutDownServices = function () {
+            let ls = localStorage;
+            let message = "Se apagaran todos los servicios";
+            if (confirm(message)) {
+                ls.clear();
+                location.reload();
+            }
+        };
+
+        const systemMain = {
+            setClock,
+            getLastAccess,
+            setOffServices,
+            delOffServices,
+            shutDownServices,
+        };
+        /* ===== */
+
+        /* ==Camaras== */
+        const getCams = function () {
+            let HTML = `
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <h3>Cámaras de vigilancia</h3>
+                        <img src="./images/camara.png" alt="camara">
+                    </div>
+                    <div class="col">
+                        <br>
+                        <b>Cam-1<button id="Rec-cam-1" class="RecButton notRec"></button></b> <span id="Status-cam-1"
+                            class="badge badge-secondary">Off</span>
+                        <img src="./images/frontal.png" alt="paisaje">
+                        <div class="switches">
+                            <input type="checkbox" name="cam-1" id="cam-1">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <br>
+                        <b>Cam-2<button id="Rec-cam-2" class="RecButton notRec"></button></b> <span id="Status-cam-2"
+                            class="badge badge-secondary">Off</span>
+                        <img src="./images/backy.png" alt="paisaje">
+                        <div class="switches">
+                            <input type="checkbox" name="cam-2" id="cam-2">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                    </div>
+                    <div class="col">
+                        <br>
+                        <b>Cam-3<button id="Rec-cam-3" class="RecButton notRec"></button></b> <span id="Status-cam-3"
+                            class="badge badge-secondary">Off</span>
+                        <img src="./images/garacam.jpg" alt="paisaje" width=255>
+                        <div class="switches">
+                            <input type="checkbox" name="cam-3" id="cam-3">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <br>
+                        <b>Cam-4<button id="Rec-cam-4" class="RecButton notRec"></button></b> <span id="Status-cam-4"
+                            class="badge badge-secondary">Off</span>
+                        <img src="./images/terrace.jpg" alt="paisaje">
+                        <div class="switches">
+                            <input type="checkbox" name="cam-4" id="cam-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+            //HTML = `<h1>Pruebas</h1>`;
+            return HTML;
+        };
+
+        const toggleOnCam = (id) => {
+            let $recButton = document.getElementById(`Rec-${id}`),
+                $spanStatus = document.getElementById(`Status-${id}`),
+                $onOffinput = document.getElementById(id);
+
+            $recButton.classList.value = "RecButton Rec";
+            $spanStatus.classList.value = "badge badge-success";
+            $spanStatus.textContent = "On";
+            $onOffinput.checked = true;
+        };
+        const toggleOffCam = (id) => {
+            let $recButton = document.getElementById(`Rec-${id}`),
+                $spanStatus = document.getElementById(`Status-${id}`),
+                $onOffinput = document.getElementById(id);
+
+            $recButton.classList.value = "RecButton notRec";
+            $spanStatus.classList.value = "badge badge-secondary";
+            $spanStatus.textContent = "Off";
+            $onOffinput.checked = false;
+        };
+
+        const getStatusCams = function () {
+            const d = document,
+                ls = localStorage;
+            //Variables que se cargan al iniciar la pagina
+            let camsList = ["cam-1", "cam-2", "cam-3", "cam-4"];
+            camsList.forEach((el) => {
+                if (ls.getItem(`${el}`) == null) ls.setItem(`${el}`, "off");
+                if (ls.getItem(`${el}`) == "On") toggleOnCam(el);
+                if (ls.getItem(`${el}`) == "Off") toggleOffCam(el);
+            });
+        };
+
+        const systemCams = {
+            getCams,
+            getStatusCams,
+            toggleOnCam,
+            toggleOffCam,
+        };
+
+        /* ==== */
+        /* === Luces === */
+        const getLights = function () {
+            let HTML = `
+   <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3>Control de luces</h3>
+                    <img src="./images/focopag.png" alt="Control de luces">
+                </div>
+                <div class="col">
+                    <br>
+                    <b>Luz cochera </b><span id="Status-luz-1" class="badge badge-secondary">Off</span>
+                    <div class="switches">
+                        <input type="checkbox" name="luz-1" id="luz-1">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="formControlRange">Intensidad de luz</label>
+                        <input id="slider-luz-1" type="range" class="form-control-range" min="1" max="15" value="10"
+                            step="1">
+                    </div>
+                </div>
+                <div class="col">
+                    <br>
+                    <b> Luz Patio </b><span id="Status-luz-2" class="badge badge-secondary">Off</span>
+                    <div class="switches">
+                        <input type="checkbox" name="luz-2" id="luz-2">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="formControlRange">Intensidad de luz</label>
+                        <input id="slider-luz-2" type="range" class="form-control-range" min="1" max="15" value="10"
+                            step="1">
+                    </div>
+
+                </div>
+                <div class="col">
+                    <br>
+                    <b> Luz Sala </b><span id="Status-luz-3" class="badge badge-secondary">Off</span>
+                    <div class="switches">
+                        <input type="checkbox" name="luz-3" id="luz-3">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="formControlRange">Intensidad de luz</label>
+                        <input id="slider-luz-3" type="range" class="form-control-range" min="1" max="15" value="10"
+                            step="1">
+                    </div>
+
+                </div>
+            </div>
+            <!--  -->
+            <div class="row">
+                <div class="col">
+
+                </div>
+                <div class="col">
+                    <br>
+                    <b>Luz cocina </b><span id="Status-luz-4" class="badge badge-secondary">Off</span>
+                    <div class="switches">
+                        <input type="checkbox" name="luz-4" id="luz-4">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="formControlRange">Intensidad de luz</label>
+                        <input id="slider-luz-4" type="range" class="form-control-range" min="1" max="15" value="10"
+                            step="1">
+                    </div>
+                </div>
+                <div class="col">
+                    <br>
+                    <b> Luz cuarto-1 </b><span id="Status-luz-5" class="badge badge-secondary">Off</span>
+                    <div class="switches">
+                        <input type="checkbox" name="luz-5" id="luz-5">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="formControlRange">Intensidad de luz</label>
+                        <input id="slider-luz-5" type="range" class="form-control-range" min="1" max="15" value="10"
+                            step="1">
+                    </div>
+
+                </div>
+                <div class="col">
+                    <br>
+                    <b> Luz cuarto-2 </b><span id="Status-luz-6" class="badge badge-secondary">Off</span>
+                    <div class="switches">
+                        <input type="checkbox" name="luz-6" id="luz-6">
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="formControlRange">Intensidad de luz</label>
+                        <input id="slider-luz-6" type="range" class="form-control-range" min="1" max="15" value="10"
+                            step="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+            return HTML;
+        };
+        const toggleOnLight = (id) => {
+            const ls = localStorage;
+            let $spanStatus = document.getElementById(`Status-${id}`),
+                $slider = document.getElementById(`slider-${id}`),
+                $onOffinput = document.getElementById(id);
+
+            $spanStatus.classList.value = "badge badge-success";
+            $spanStatus.textContent = "On";
+            $onOffinput.checked = true;
+            $slider.value = ls.getItem(`slider-${id}`);
+            console.log($slider.value);
+        };
+        const toggleOffLight = (id) => {
+            const ls = localStorage;
+            let $spanStatus = document.getElementById(`Status-${id}`),
+                $slider = document.getElementById(`slider-${id}`),
+                $onOffinput = document.getElementById(id);
+
+            $spanStatus.classList.value = "badge badge-secondary";
+            $spanStatus.textContent = "Off";
+            $onOffinput.checked = false;
+            $slider.value = ls.getItem(`slider-${id}`);
+            console.log($slider.value);
+        };
+        const getStatusLights = function () {
+            const d = document,
+                ls = localStorage;
+            //Variables que se cargan al iniciar la pagina
+            let lightsList = ["luz-1", "luz-2", "luz-3", "luz-4", "luz-5", "luz-6"];
+            lightsList.forEach((el) => {
+                if (ls.getItem(`${el}`) == null) ls.setItem(`${el}`, "off");
+                if (ls.getItem(`slider-${el}`) == null) ls.setItem(`slider-${el}`, 7);
+                if (ls.getItem(`${el}`) == "On") toggleOnLight(el);
+                if (ls.getItem(`${el}`) == "Off") toggleOffLight(el);
+            });
+        };
+
+        const systemLights = {
+            getLights,
+            getStatusLights,
+            toggleOnLight,
+            toggleOffLight,
+        };
+
+        /* ====== */
+        /* === Timbre === */
+        const getBell = function () {
+            let HTML = `
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <h3><b>Detección de timbre</b></h3>
+                    </div>
+                    <div class="col">
+                        <br>
+                        <b>Timbre de puerta pricipal </b><span id="Status-timbre-1" class="badge badge-secondary">Closed</span>
+                        <div class="switches">
+                            <input type="checkbox" name="timbre-1" id="timbre-1">
+                        </div>
+                        <br>
+                        <img id="frontal-timbre-1" src="./images/frontal.png" alt="Cerrada">
+                    </div>
+                    <div class="col">
+                        <br>
+                        <center><h4>Timbre </h4></center>
+                        <br>
+                        <br>
+                        <img id="img-timbre-1" src="./images/timbrechido.png" alt="cerrado">
+                    </div>
+                </div>
+            </div>
+            `;
+            return HTML;
+        };
+        /* ====== */
+        const toggleOnBell = (id) => {
+            let $spanStatus = document.getElementById(`Status-${id}`),
+                $onOffinput = document.getElementById(id);
+            if (`img-${id}` == "img-timbre-1") {
+                let $img = document.getElementById(`img-${id}`),
+                    $img2 = document.getElementById(`frontal-${id}`);
+                $img2.src = "./images/frontal_persona.png";
+                $img.src = "./images/timbrechido_activo.png";
+            }
+
+            $spanStatus.classList.value = "badge badge-warning";
+            $spanStatus.textContent = "Bienvenido!";
+            $onOffinput.checked = true;
+        };
+        const toggleOffBell = (id) => {
+            let $spanStatus = document.getElementById(`Status-${id}`),
+                $onOffinput = document.getElementById(id);
+
+            if (`img-${id}` == "img-timbre-1") {
+                let $img = document.getElementById(`img-${id}`),
+                    $img2 = document.getElementById(`frontal-${id}`);
+                $img2.src = "./images/frontal.png";
+                $img.src = "./images/timbrechido.png";
+            }
+
+            $spanStatus.classList.value = "badge badge-secondary";
+            $spanStatus.textContent = "Closed";
+            $onOffinput.checked = false;
+        };
+        const getStatusBell = function () {
+            const d = document,
+                ls = localStorage;
+            //Variables que se cargan al iniciar la pagina
+            let doorsList = ["timbre-1", "timbre-2"];
+            doorsList.forEach((el) => {
+                if (ls.getItem(`${el}`) == null) ls.setItem(`${el}`, "Closed");
+                if (ls.getItem(`${el}`) == "Opened") toggleOnBell(el);
+                if (ls.getItem(`${el}`) == "Closed") toggleOffBell(el);
+            });
+        };
+        const systemBell = {
+            getBell,
+            getStatusBell,
+            toggleOnBell,
+            toggleOffBell,
+        };
+        /* ====== */
+        /* === Puertas === */
+        const getDoors = function () {
+            let HTML = `
+   <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3><b>Control de puertas y garage</b></h3>
+                </div>
+                <div class="col">
+                    <br>
+                    <b>Puerta pricipal </b><span id="Status-puerta-1" class="badge badge-secondary">Closed</span>
+                    <div class="switches">
+                        <input type="checkbox" name="puerta-1" id="puerta-1">
+                    </div>
+                    <img id="img-puerta-1" src="./images/PuertaCloseB.jpg" alt="Cerrada">
+                </div>
+                <div class="col">
+                    <br>
+                    <b>Garage </b><span id="Status-puerta-2" class="badge badge-secondary">Closed</span>
+                    <div class="switches">
+                        <input type="checkbox" name="puerta-2" id="puerta-2">
+                    </div>
+                    <img id="img-puerta-2" src="./images/garageCerr.png" alt="cerrado">
+                </div>
+            </div>
+        </div>
+  `;
+            return HTML;
+        };
+
+        const toggleOnDoor = (id) => {
+            let $spanStatus = document.getElementById(`Status-${id}`),
+                $onOffinput = document.getElementById(id);
+            if (`img-${id}` == "img-puerta-1") {
+                let $img = document.getElementById(`img-${id}`);
+                $img.src = "./images/PuertaOpenW.png";
+            }
+            if (`img-${id}` == "img-puerta-2") {
+                let $img = document.getElementById(`img-${id}`);
+                $img.src = "./images/garageAB.png";
+            }
+            $spanStatus.classList.value = "badge badge-danger";
+            $spanStatus.textContent = "Opened!";
+            $onOffinput.checked = true;
+        };
+
+        const toggleOffDoor = (id) => {
+            let $spanStatus = document.getElementById(`Status-${id}`),
+                $onOffinput = document.getElementById(id);
+            if (`img-${id}` == "img-puerta-1") {
+                let $img = document.getElementById(`img-${id}`);
+                $img.src = "./images/PuertaCloseB.jpg";
+            }
+            if (`img-${id}` == "img-puerta-2") {
+                let $img = document.getElementById(`img-${id}`);
+                $img.src = "./images/garageCerr.png";
+            }
+            $spanStatus.classList.value = "badge badge-secondary";
+            $spanStatus.textContent = "Closed";
+            $onOffinput.checked = false;
+        };
+
+        const getStatusDoors = function () {
+            const d = document,
+                ls = localStorage;
+            //Variables que se cargan al iniciar la pagina
+            let doorsList = ["puerta-1", "puerta-2"];
+            doorsList.forEach((el) => {
+                if (ls.getItem(`${el}`) == null) ls.setItem(`${el}`, "Closed");
+                if (ls.getItem(`${el}`) == "Opened") toggleOnDoor(el);
+                if (ls.getItem(`${el}`) == "Closed") toggleOffDoor(el);
+            });
+        };
+
+        const systemDoors = {
+            getDoors,
+            getStatusDoors,
+            toggleOnDoor,
+            toggleOffDoor,
+        };
+
+        /* ====== */
+
+
+
+        document.addEventListener("DOMContentLoaded", (e) => {
+            systemMain.getLastAccess();
+            systemMain.setClock();
+        });
+
+
+        /* Main */
+        const main = () => {
+            const d = document,
+                ls = localStorage;
+            const $section = document.getElementById("Seccion");
+
+            //d.querySelector(".loader").style.display = "none";
+            //d.querySelector(".loader").style.display = "block";
+            d.addEventListener("click", (e) => {
+                if (e.target.matches("#setOffServices")) {
+                    console.log("Programando apagado");
+                    systemMain.setOffServices();
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        //error: () => $section.insertAdjacentHTML("afterend", `<p><b> Algo salio mal </b></p>`),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                }
+                if (e.target.matches("#delDate")) {
+                    console.log("Eliminando apagado");
+                    systemMain.delOffServices();
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        //error: () => $section.insertAdjacentHTML("afterend", `<p><b> Algo salio mal </b></p>`),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                }
+                if (e.target.matches("#shutDown")) {
+                    console.log("Eliminando apagado");
+                    systemMain.shutDownServices();
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        //error: () => $section.insertAdjacentHTML("afterend", `<p><b> Algo salio mal </b></p>`),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                }
+                //console.log(e);
+                if (e.target.matches("#cams")) {
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                    $section.innerHTML = "";
+                    $section.innerHTML = systemCams.getCams();
+                    systemCams.getStatusCams();
+                }
+                if (e.target.matches("#light")) {
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        //error: () => $section.insertAdjacentHTML("afterend", `<p><b> Algo salio mal </b></p>`),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                    //console.log("Soy la luz");
+                    $section.innerHTML = "";
+                    $section.innerHTML = systemLights.getLights();
+                    systemLights.getStatusLights();
+                }
+                if (e.target.matches("#bell")) {
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                    //console.log("Soy el timbre");
+                    $section.innerHTML = "";
+                    $section.innerHTML = systemBell.getBell();
+                    systemBell.getStatusBell();
+                }
+                if (e.target.matches("#door")) {
+                    ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/",
+                        success: (res) => loction.reload(),
+                        error: () => console.log(""),
+                        data: dataFetch.reset_section,
+                    });
+                    //console.log("Soy la puerta");
+                    $section.innerHTML = "";
+                    $section.innerHTML = systemDoors.getDoors();
+                    systemDoors.getStatusDoors();
+                }
+                /* === Camaras === */
+                if (e.target.matches("#cam-1")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        console.log("Se prendio la camara-1");
+                        ls.setItem("cam-1", "On");
+                        systemCams.toggleOnCam("cam-1");
+                        dataFetch.json_cams.camaras[0] = [1, "On"];
+                    } else {
+                        console.log("Se apago la camara-1");
+                        ls.setItem("cam-1", "Off");
+                        systemCams.toggleOffCam("cam-1");
+                        dataFetch.json_cams.camaras[0] = [1, "Off"];
+                    }
+                    dataFetch.sentData(dataFetch.json_cams);
+                }
+                if (e.target.matches("#cam-2")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        console.log("Se prendio la camara-2");
+                        ls.setItem("cam-2", "On");
+                        systemCams.toggleOnCam("cam-2");
+                        dataFetch.json_cams.camaras[1] = [2, "On"];
+                    } else {
+                        console.log("Se apago la camara-2");
+                        ls.setItem("cam-2", "Off");
+                        systemCams.toggleOffCam("cam-2");
+                        dataFetch.json_cams.camaras[1] = [2, "Off"];
+                    }
+                    console.log(dataFetch.json_cams.camaras);
+                    dataFetch.sentData(dataFetch.json_cams);
+                }
+                if (e.target.matches("#cam-3")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        console.log("Se prendio la camara-3");
+                        ls.setItem("cam-3", "On");
+                        systemCams.toggleOnCam("cam-3");
+                        dataFetch.json_cams.camaras[2] = [3, "On"];
+                    } else {
+                        console.log("Se apago la camara-3");
+                        ls.setItem("cam-3", "Off");
+                        systemCams.toggleOffCam("cam-3");
+                        dataFetch.json_cams.camaras[2] = [3, "Off"];
+                    }
+                    dataFetch.sentData(dataFetch.json_cams);
+                }
+                if (e.target.matches("#cam-4")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("cam-4", "On");
+                        console.log("Se prendio la camara-4");
+                        systemCams.toggleOnCam("cam-4");
+                        dataFetch.json_cams.camaras[3] = [4, "On"];
+                    } else {
+                        console.log("Se apago la camara-4");
+                        ls.setItem("cam-4", "Off");
+                        systemCams.toggleOffCam("cam-4");
+                        dataFetch.json_cams.camaras[3] = [4, "Off"];
+                    }
+                    console.log(dataFetch.json_cams.camaras);
+                    dataFetch.sentData(dataFetch.json_cams);
+                }
+                /*======= Luces =======*/
+                if (e.target.matches("#luz-1")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("luz-1", "On");
+                        console.log("Se prendio la luz-1");
+                        systemLights.toggleOnLight("luz-1");
+                        dataFetch.json_lights.luces[0] = [1, "On"]
+                    } else {
+                        ls.setItem("luz-1", "Off");
+                        console.log("Se apago la luz-1");
+                        systemLights.toggleOffLight("luz-1");
+                        dataFetch.json_lights.luces[0] = [1, "Off"]
+                    }
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#luz-2")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("luz-2", "On");
+                        console.log("Se prendio la luz-2");
+                        systemLights.toggleOnLight("luz-2");
+                        dataFetch.json_lights.luces[1] = [2, "On"]
+                    } else {
+                        ls.setItem("luz-2", "Off");
+                        console.log("Se apago la luz-2");
+                        systemLights.toggleOffLight("luz-2");
+                        dataFetch.json_lights.luces[1] = [2, "Off"]
+                    }
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#luz-3")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("luz-3", "On");
+                        console.log("Se prendio la luz-3");
+                        systemLights.toggleOnLight("luz-3");
+                        dataFetch.json_lights.luces[2] = [3, "On"]
+                    } else {
+                        ls.setItem("luz-3", "Off");
+                        console.log("Se apago la luz-3");
+                        systemLights.toggleOffLight("luz-3");
+                        dataFetch.json_lights.luces[2] = [3, "Off"]
+                    }
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#luz-4")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("luz-4", "On");
+                        console.log("Se prendio la luz-4");
+                        systemLights.toggleOnLight("luz-4");
+                        dataFetch.json_lights.luces[3] = [4, "On"]
+                    } else {
+                        ls.setItem("luz-4", "Off");
+                        console.log("Se apago la luz-4");
+                        systemLights.toggleOffLight("luz-4");
+                        dataFetch.json_lights.luces[3] = [4, "Off"]
+                    }
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#luz-5")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("luz-5", "On");
+                        console.log("Se prendio la luz-5");
+                        systemLights.toggleOnLight("luz-5");
+                        dataFetch.json_lights.luces[4] = [5, "On"]
+                    } else {
+                        ls.setItem("luz-5", "Off");
+                        console.log("Se apago la luz-5");
+                        systemLights.toggleOffLight("luz-5");
+                        dataFetch.json_lights.luces[4] = [5, "Off"]
+                    }
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#luz-6")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("luz-6", "On");
+                        console.log("Se prendio la luz-6");
+                        systemLights.toggleOnLight("luz-6");
+                        dataFetch.json_lights.luces[5] = [6, "On"]
+                    } else {
+                        ls.setItem("luz-6", "Off");
+                        console.log("Se apago la luz-6");
+                        systemLights.toggleOffLight("luz-6");
+                        dataFetch.json_lights.luces[5] = [6, "Off"]
+                    }
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                /* == Timbre == */
+                if (e.target.matches("#timbre-1")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("timbre-1", "Opened");
+                        console.log("Se activo el timbre");
+                        systemBell.toggleOnBell("timbre-1");
+                        dataFetch.json_bell.timbre[0] = [1, "Opened"]
+                    } else {
+                        ls.setItem("timbre-1", "Closed");
+                        console.log("Se desactivo el timbre");
+                        systemBell.toggleOffBell("timbre-1");
+                        dataFetch.json_bell.timbre[0] = [1, "Closed"]
+                    }
+                    console.log(dataFetch.json_bell)
+                    dataFetch.sentData(dataFetch.json_bell)
+                }
+
+
+                /*=== Puertas ===*/
+                if (e.target.matches("#puerta-1")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("puerta-1", "Opened");
+                        console.log("Se abrio la puerta puerta-1");
+                        systemDoors.toggleOnDoor("puerta-1");
+                        dataFetch.json_door.puertas[0] = [1, "Opened"]
+                    } else {
+                        ls.setItem("puerta-1", "Closed");
+                        console.log("Se cerro la puerta-1");
+                        systemDoors.toggleOffDoor("puerta-1");
+                        dataFetch.json_door.puertas[0] = [1, "Closed"]
+                    }
+                    console.log(dataFetch.json_door)
+                    dataFetch.sentData(dataFetch.json_door)
+                }
+                if (e.target.matches("#puerta-2")) {
+                    console.log(e.target.checked);
+                    if (e.target.checked) {
+                        ls.setItem("puerta-2", "Opened");
+                        console.log("Se abrio la puerta puerta-2");
+                        systemDoors.toggleOnDoor("puerta-2");
+                        dataFetch.json_door.puertas[1] = [2, "Opened"]
+                    } else {
+                        ls.setItem("puerta-2", "Closed");
+                        console.log("Se cerro la puerta-2");
+                        systemDoors.toggleOffDoor("puerta-2");
+                        dataFetch.json_door.puertas[1] = [2, "Closed"]
+                    }
+                    console.log(dataFetch.json_door)
+                    dataFetch.sentData(dataFetch.json_door)
+                }
+            });
+            /* Manejo de eventos del Slider */
+            d.addEventListener("input", (e) => {
+                let lights = ["luz-1", "luz-2", "luz-3", "luz-4", "luz-5", "luz-6"];
+                if (e.target.matches("#slider-luz-1")) {
+                    console.log(e.target.value);
+                    ls.setItem("slider-luz-1", e.target.value);
+                    dataFetch.json_lights.slide[0] = [1, e.target.value];
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#slider-luz-2")) {
+                    console.log(e.target.value);
+                    ls.setItem("slider-luz-2", e.target.value);
+                    dataFetch.json_lights.slide[1] = [2, e.target.value];
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#slider-luz-3")) {
+                    console.log(e.target.value);
+                    ls.setItem("slider-luz-3", e.target.value);
+                    dataFetch.json_lights.slide[2] = [3, e.target.value];
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#slider-luz-4")) {
+                    console.log(e.target.value);
+                    ls.setItem("slider-luz-4", e.target.value);
+                    dataFetch.json_lights.slide[3] = [4, e.target.value];
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#slider-luz-5")) {
+                    console.log(e.target.value);
+                    ls.setItem("slider-luz-5", e.target.value);
+                    dataFetch.json_lights.slide[4] = [5, e.target.value];
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+                if (e.target.matches("#slider-luz-6")) {
+                    console.log(e.target.value);
+                    ls.setItem("slider-luz-6", e.target.value);
+                    dataFetch.json_lights.slide[5] = [6, e.target.value];
+                    console.log(dataFetch.json_lights)
+                    dataFetch.sentData(dataFetch.json_lights)
+                }
+
+            });
+        };
+
+        main();
+    </script>
+</body>
+
+</html>
