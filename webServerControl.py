@@ -23,8 +23,6 @@ import json
 import magic
 from led_manager import reset_control, cam_control, light_control, bell_control, door_control
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from flask import Flask
-from flask_cors import CORS
 
 
 # import time
