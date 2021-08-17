@@ -4,7 +4,10 @@
 # webserver.py
 # Starts a custom webserver and handles all requests
 #
-# Autor: Méndez Cabrera Ana Belem
+# Autores:
+# Dominguez Durán Gerardo
+# Méndez Cabrera Ana Belem
+# Rodríguez Sánchez José Andrés
 # License: MIT
 #
 # ## ###############################################
@@ -82,7 +85,7 @@ class WebServer(BaseHTTPRequestHandler):
         if 'luces' in json_obj:
             func = light_control
             print('\tCall{}({})'.format(func, "Light_control"))
-            func(json_obj['luces'],json_obj['slide'])
+            func(json_obj['luces'], json_obj['slide'])
 
         if 'timbre' in json_obj:
             func = bell_control

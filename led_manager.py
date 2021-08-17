@@ -4,7 +4,11 @@
 # led_manager.py
 # Controls leds in the GPIO
 #
-# Autor: Dominguez Duran Gerardo
+# Autor:
+# Autores:
+# Dominguez Durán Gerardo
+# Méndez Cabrera Ana Belem
+# Rodríguez Sánchez José Andrés
 # License: MIT
 #
 # ## ###############################################
