@@ -2,5 +2,5 @@
 Proyecto final 
 Autores:
 Dominguez Durán Gerardo
-García Cabrera Ana Belém
+Méndez Cabrera Ana Belém
 Rodríguez Sánchez José Andrés
